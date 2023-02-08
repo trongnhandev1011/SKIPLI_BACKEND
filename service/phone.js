@@ -1,7 +1,6 @@
 const db = require("../firebase.config");
 const twilioClient = require("../twilio.config");
 const generateAccessCode = require("../utils");
-const { phoneRegex, codeRegex } = require("../constants/regex");
 
 const createNewAccessCode = async (req, res) => {
   const code = generateAccessCode();
@@ -10,19 +9,19 @@ const createNewAccessCode = async (req, res) => {
   let statusCode = 200;
 
   try {
-    if (!data.body.phoneNumber || !phoneRegex.test(data.body.phoneNumber)) {
-      statusCode = 500;
-      returnMsg = "Create failed";
+    if (!data.body.phoneNumber) {
+      statusCode = 400;
+      returnMsg = "created_failed";
     } else {
       const result = await db
         .collection("phones")
         .doc(data.body.phoneNumber)
         .set({ code: code, isValidated: false });
-      returnMsg = "Create successfully";
+      returnMsg = "created_success";
     }
   } catch (e) {
     statusCode = 500;
-    returnMsg = "Create failed";
+    returnMsg = "server_error";
   }
 
   twilioClient.messages.create({
@@ -44,13 +43,13 @@ const validateAccessCode = async (req, res) => {
     console.log(doc.data()?.code);
     if (doc.data()?.code.toString() === data.body?.accessCode) {
       const result = await phoneRef.update({ isValidated: true });
-      msg = "Validate successfully";
+      msg = "validated_success";
     } else {
-      msg = "Invalid access code";
+      msg = "validated_failed";
       statusCode = 400;
     }
   } catch (e) {
-    msg = "Server error";
+    msg = "server_error";
     statusCode = 500;
   }
 
