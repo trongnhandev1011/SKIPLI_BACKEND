@@ -1,6 +1,6 @@
 const db = require("../firebase.config");
 const twilioClient = require("../twilio.config");
-const generateAccessCode = require("../utils");
+const generateAccessCode = require("../utils/utils");
 
 const createNewAccessCode = async (req, res) => {
   const code = generateAccessCode();
