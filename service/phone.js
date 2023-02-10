@@ -40,7 +40,6 @@ const validateAccessCode = async (req, res) => {
   const phoneRef = db.collection("phones").doc(data.body.phoneNumber);
   try {
     const doc = await phoneRef.get();
-    console.log(doc.data()?.code);
     if (doc.data()?.code.toString() === data.body?.accessCode) {
       const result = await phoneRef.update({ isValidated: true });
       msg = "validated_success";
